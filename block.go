@@ -2,6 +2,9 @@ package main
 
 import (
 	"time"
+	"bytes"
+	"encoding/gob"
+	"log"
 )
 
 type Block struct {
@@ -29,3 +32,23 @@ func NewBlock(data string,prevBlockHash []byte) *Block  {
 	return block
 
 }
+//序列化
+func (b *Block)Serialize() []byte{
+	var result bytes.Buffer//定义一个buffer用来存储序列化后的数据
+	encoder:=gob.NewEncoder(&result)//
+	err:=encoder.Encode(b)//对block进行编码并写入result中
+	if err!=nil{
+		log.Fatal(err)
+	}
+	return result.Bytes()
+}
+//反序列化
+func DeserializeBlock(d []byte) *Block{
+	var block Block
+	decoder:=gob.NewDecoder(bytes.NewReader(d))
+	err:=decoder.Decode(&block)
+	if err!=nil{
+		log.Fatal(err)
+	}
+	return &block
+	}
